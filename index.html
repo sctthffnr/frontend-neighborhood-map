@@ -4,20 +4,20 @@
   <meta charset="UTF-8">
   <title>Document</title>
 
-  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="css/style.css">
 
 </head>
 <body>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-3 locations">
-        <ul data-bind="foreach: locations">
-          <li data-bind="text: title"></li>
-        </ul>
-      </div>
-      <div class="col-md-9" id="map"></div>
+  <div class="container-fluid fill">
+    <div class="locations col-md-3">
+        <input type="text" class="form-control" name="" id="">
+        <button class="btn btn-primary"><span class="glyphicon glyphicon-filter"></span> Filter</button>
+      <ul class="locations-list" data-bind="foreach: locations">
+        <li class="list-item" data-bind="text: title"></li>
+      </ul>
     </div>
+    <div class="col-md-9" id="map"></div>
   </div>
 </body>
 

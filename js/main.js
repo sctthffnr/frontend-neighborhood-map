@@ -13,9 +13,7 @@ var ViewModel = function() {
 };
 
 
-
 function initMap() {
-  var myLatLng = {lat: 42.5750, lng: -71.9826};
 
   var map = new google.maps.Map(document.getElementById('map'), {
     zoom: 13,
