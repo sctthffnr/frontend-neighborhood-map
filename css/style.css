@@ -17,12 +17,3 @@ html, body {
   height: 100%;
   padding: 0 0 0 1px;
 }
-
-.locations-list {
-  list-style-type: none;
-  padding-left: 10px;
-}
-
-.list-item {
-  margin-bottom: 10px;
-}

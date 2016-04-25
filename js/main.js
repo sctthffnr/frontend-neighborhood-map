@@ -2,7 +2,7 @@ var mapLocation = function(lat, lng, title) {
   this.latitude = lat;
   this.longitude = lng;
   this.title = ko.observable(title);
-  this.visible = true;
+  this.show = ko.observable(true);
 };
 
 var ViewModel = {
@@ -10,13 +10,33 @@ var ViewModel = {
     new mapLocation(42.5750, -71.9826, 'The Big Chair'),
     new mapLocation(42.5740603, -71.9958973, 'City Hall'),
     new mapLocation(42.5741523, -71.9944446, 'Blue Moon Diner')
-  ]
+  ],
+
+  filter: ko.observable(''),
+
+  // Compare the value from the input box to the location's title. If the title
+  // does not match any part of the input, don't show it on the map.
+  filterLocations: function() {
+    var input = new RegExp(ViewModel.filter(), 'i');
+    ViewModel.locations.forEach(function(location) {
+      if (location.title().match(input)) {
+        location.show(true);
+      } else {
+        location.show(false);
+      }
+    });
+    View.renderMarkers();
+  }
 };
 
 var View = {
   renderMarkers: function() {
     ViewModel.locations.forEach(function(location) {
-      location.marker.setMap(ViewModel.map);
+      if (location.show()) {
+        location.marker.setMap(ViewModel.map);
+      } else {
+        location.marker.setMap(null);
+      }
     });
   }
 };
