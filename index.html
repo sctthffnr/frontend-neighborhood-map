@@ -17,7 +17,7 @@
                placeholder="Search" class="form-control" name="" id="">
       </div>
       <ul class="list-unstyled" data-bind="foreach: locations">
-        <li data-bind="text: title, visible: show"></li>
+        <li data-bind="text: title, visible: show, click: $parent.getInfo"></li>
       </ul>
     </div>
     <div class="col-md-9" id="map"></div>
