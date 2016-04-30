@@ -17,7 +17,6 @@ function init() {
       animation: google.maps.Animation.DROP
     });
     this.infoWindow = new google.maps.InfoWindow({
-      position: {lat: 42.5751, lng: -71.9981},
       content: ''
     });
   };
@@ -45,10 +44,11 @@ function init() {
   };
 
   mapLocation.prototype.formatWikipedia = function(text) {
+    var $infoWindow = $('.infoWindow');
     var header = '<h2>Wikipedia Entry</h2>';
     text = '<p>' + text + '</p>';
     var html = header + text;
-    this.updateInfoWindow(html);
+    $infoWindow.append(html);
   };
 
   mapLocation.prototype.getFlickr = function() {
@@ -66,17 +66,19 @@ function init() {
   };
 
   mapLocation.prototype.flickrCallback = function(data) {
+    var $infoWindow = $('.infoWindow');
     var self = this;
-    self.updateInfoWindow('<h2>Pictures from Flickr</h2>');
+    $infoWindow.append('<h2>Pictures from Flickr</h2>');
     data.photos.photo.forEach(function(photo) {
       var img = 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
       var html = '<img src="' + img + '">';
-      self.updateInfoWindow(html);
+      $infoWindow.append(html);
     });
   };
 
   mapLocation.prototype.toggleInfoWindow = function() {
     if (this.infoWindow.content === '') {
+      this.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
       this.getInfo();
     }
     if (this.infoWindowOpen) {
@@ -103,17 +105,14 @@ function init() {
     this.infoWindowOpen = true;
   };
 
-  mapLocation.prototype.updateInfoWindow = function(data) {
-    var updated = this.infoWindow.content + data;
-    this.infoWindow.setContent(updated);
-  };
-
   var ViewModel = {
 
     locations: [
       new mapLocation(42.5750, -71.9826, 'The Big Chair'),
       new mapLocation(42.5740603, -71.9958973, 'City Hall'),
-      new mapLocation(42.5741523, -71.9944446, 'Blue Moon Diner')
+      new mapLocation(42.5741523, -71.9944446, 'Blue Moon Diner'),
+      new mapLocation(42.593884, -71.985331, 'Mount Wachusett Community College'),
+      new mapLocation(42.580153, -71.971216, 'Dunn State Park')
     ],
 
     filter: ko.observable(''),
