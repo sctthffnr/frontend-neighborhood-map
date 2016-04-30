@@ -23,17 +23,6 @@ function init() {
       content: ''
     });
 
-    self.getWikipedia = function() {
-      var wikipedia_query = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=&explaintext=&titles=';
-      $.ajax({
-        url: wikipedia_query + self.title(),
-        dataType: 'jsonp',
-        success: function(data) {
-          self.wikipediaCallback(data);
-        }
-      });
-    }();
-
     self.wikipediaCallback = function(data) {
       var id = data.query.pages;
       var text = id[Object.keys(id)[0]].extract;
@@ -61,7 +50,7 @@ function init() {
           self.flickrCallback(data);
         }
       });
-    }();
+    };
 
     self.flickrCallback = function(data) {
       self.updateInfoWindow('<h2>Pictures from Flickr</h2>');
@@ -71,6 +60,19 @@ function init() {
         self.updateInfoWindow(html);
       });
     };
+  };
+
+  // Prototype definitions for mapLocation class
+  mapLocation.prototype.getWikipedia = function() {
+    var wikipedia_query = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=&explaintext=&titles=';
+    var self = this;
+    $.ajax({
+      url: wikipedia_query + self.title(),
+      dataType: 'jsonp',
+      success: function(data) {
+        self.wikipediaCallback(data);
+      }
+    });
   };
 
   mapLocation.prototype.closeInfoWindow = function() {
@@ -130,6 +132,8 @@ function init() {
           location.marker.setMap(null);
         }
         location.marker.addListener('click', location.toggleInfoWindow.bind(location));
+        location.getWikipedia();
+        location.getFlickr();
       });
     },
 
