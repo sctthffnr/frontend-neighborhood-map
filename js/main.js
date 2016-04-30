@@ -132,6 +132,7 @@ function init() {
     initMap: function() {
       ViewModel.renderMap();
       ViewModel.renderMarkers();
+      ViewModel.listClickHandler();
     },
 
     renderMap: function() {
@@ -149,6 +150,12 @@ function init() {
           location.marker.setMap(null);
         }
         location.marker.addListener('click', location.toggleInfoWindow.bind(location));
+      });
+    },
+
+    listClickHandler: function() {
+      $('.list-item').click(function() {
+        $(this).toggleClass('list-item-active');
       });
     },
 
