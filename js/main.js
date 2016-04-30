@@ -23,15 +23,21 @@ function init() {
 
   // Prototype definitions for mapLocation class
   mapLocation.prototype.getWikipedia = function() {
-    var wikipedia_query = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=&explaintext=&titles=';
     var self = this;
+    var url = self.createWikipediaURL(self);
     $.ajax({
-      url: wikipedia_query + self.title(),
+      url: url,
       dataType: 'jsonp',
       success: function(data) {
         self.wikipediaCallback(data);
       }
     });
+  };
+
+  mapLocation.prototype.createWikipediaURL = function(location) {
+    var wikipedia_query = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=&explaintext=&titles=';
+    var url = wikipedia_query + location.title();
+    return url;
   };
 
   mapLocation.prototype.wikipediaCallback = function(data) {
@@ -53,16 +59,22 @@ function init() {
 
   mapLocation.prototype.getFlickr = function() {
     var self = this;
-    var url = 'https://api.flickr.com/services/rest/?method=flickr.photos.search';
-    var api_key = '816dfffa932b12dc03313acf79610d73';
-    var query = self.title() + ' ' + self.city + ' ' + self.state;
-     $.ajax({
-      url: url + '&text=' + query + '&api_key=' + api_key + '&per_page=10&format=json&nojsoncallback=1',
+    var url = self.createFlickerURL(self);
+    $.ajax({
+      url: url,
       dataType: 'json',
       success: function(data) {
         self.flickrCallback(data);
       }
     });
+  };
+
+  mapLocation.prototype.createFlickerURL = function(location) {
+    var base_url = 'https://api.flickr.com/services/rest/?method=flickr.photos.search';
+    var api_key = '816dfffa932b12dc03313acf79610d73';
+    var query = location.title() + ' ' + location.city + ' ' + location.state;
+    var url = base_url + '&text=' + query + '&api_key=' + api_key + '&per_page=10&format=json&nojsoncallback=1';
+    return url;
   };
 
   mapLocation.prototype.flickrCallback = function(data) {
