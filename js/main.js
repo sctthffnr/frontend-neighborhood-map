@@ -71,36 +71,33 @@ function init() {
         self.updateInfoWindow(html);
       });
     };
+  };
 
-    self.toggleInfoWindow = function() {
-      if (self.infoWindowOpen) {
-        self.closeInfoWindow();
-      } else {
-        self.openInfoWindow();
-      }
-    };
+  mapLocation.prototype.closeInfoWindow = function() {
+    this.infoWindow.close();
+    this.marker.setAnimation(null);
+    this.infoWindowOpen = false;
+  };
 
-    self.openInfoWindow = function() {
-      self.infoWindow.open(ViewModel.map, self.marker);
-      self.marker.setAnimation(google.maps.Animation.BOUNCE);
-      self.infoWindowOpen = true;
-    };
+  mapLocation.prototype.openInfoWindow = function() {
+    this.infoWindow.open(ViewModel.map, this.marker);
+    this.marker.setAnimation(google.maps.Animation.BOUNCE);
+    this.infoWindowOpen = true;
+  };
 
-    self.closeInfoWindow = function() {
-      self.infoWindow.close();
-      self.marker.setAnimation(null);
-      self.infoWindowOpen = false;
-    };
+  mapLocation.prototype.toggleInfoWindow = function() {
+    if (this.infoWindowOpen) {
+      this.closeInfoWindow();
+    } else {
+      this.openInfoWindow();
+    }
+  };
 
-    self.updateInfoWindow = function(data) {
-      var updated = self.infoWindow.content + data;
-      self.infoWindow = new google.maps.InfoWindow({
-        content: updated
-      });
-    };
-
-    self.marker.addListener('click', self.toggleInfoWindow);
-
+  mapLocation.prototype.updateInfoWindow = function(data) {
+    var updated = this.infoWindow.content + data;
+    this.infoWindow = new google.maps.InfoWindow({
+      content: updated
+    });
   };
 
   var ViewModel = {
@@ -132,6 +129,7 @@ function init() {
         } else {
           location.marker.setMap(null);
         }
+        location.marker.addListener('click', location.toggleInfoWindow.bind(location));
       });
     },
 
