@@ -12,11 +12,14 @@ function init() {
     self.longitude = lng;
     self.title = ko.observable(title);
     self.show = ko.observable(true);
+    self.infoWindowOpen = false;
     self.marker = new google.maps.Marker({
       position: {lat: this.latitude, lng: this.longitude},
-      title: this.title()
+      title: this.title(),
+      animation: google.maps.Animation.DROP
     });
     self.infoWindow = new google.maps.InfoWindow({
+      position: {lat: 42.5751, lng: -71.9981},
       content: ''
     });
 
@@ -69,15 +72,35 @@ function init() {
       });
     };
 
+    self.toggleInfoWindow = function() {
+      if (self.infoWindowOpen) {
+        self.closeInfoWindow();
+      } else {
+        self.openInfoWindow();
+      }
+    };
+
+    self.openInfoWindow = function() {
+      self.infoWindow.open(ViewModel.map, self.marker);
+      self.marker.setAnimation(google.maps.Animation.BOUNCE);
+      self.infoWindowOpen = true;
+    };
+
+    self.closeInfoWindow = function() {
+      self.infoWindow.close();
+      self.marker.setAnimation(null);
+      self.infoWindowOpen = false;
+    };
+
     self.updateInfoWindow = function(data) {
       var updated = self.infoWindow.content + data;
       self.infoWindow = new google.maps.InfoWindow({
         content: updated
       });
-      self.marker.addListener('click', function() {
-        self.infoWindow.open(ViewModel.map, self.marker);
-      });
     };
+
+    self.marker.addListener('click', self.toggleInfoWindow);
+
   };
 
   var ViewModel = {
@@ -89,6 +112,11 @@ function init() {
     ],
 
     filter: ko.observable(''),
+
+    initMap: function() {
+      ViewModel.renderMap();
+      ViewModel.renderMarkers();
+    },
 
     renderMap: function() {
       ViewModel.map = new google.maps.Map(document.getElementById('map'), {
@@ -107,11 +135,6 @@ function init() {
       });
     },
 
-    initMap: function() {
-      ViewModel.renderMap();
-      ViewModel.renderMarkers();
-    },
-
     // Compare the value from the input box to the location's title. If the title
     // does not match any part of the input, don't show it on the map.
     filterLocations: function() {
@@ -124,7 +147,7 @@ function init() {
         }
       });
       ViewModel.renderMarkers();
-    }
+    },
   };
 
   ko.applyBindings(ViewModel);
