@@ -24,7 +24,7 @@ function init() {
   // Prototype definitions for mapLocation class
   mapLocation.prototype.getWikipedia = function() {
     var self = this;
-    var url = self.createWikipediaURL(self);
+    var url = self.createWikipediaAPIURL(self);
     $.ajax({
       url: url,
       dataType: 'jsonp',
@@ -34,7 +34,7 @@ function init() {
     });
   };
 
-  mapLocation.prototype.createWikipediaURL = function(location) {
+  mapLocation.prototype.createWikipediaAPIURL = function(location) {
     var wikipedia_query = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=&explaintext=&titles=';
     var url = wikipedia_query + location.title();
     return url;
@@ -59,7 +59,7 @@ function init() {
 
   mapLocation.prototype.getFlickr = function() {
     var self = this;
-    var url = self.createFlickerURL(self);
+    var url = self.createFlickerAPIURL(self);
     $.ajax({
       url: url,
       dataType: 'json',
@@ -69,7 +69,7 @@ function init() {
     });
   };
 
-  mapLocation.prototype.createFlickerURL = function(location) {
+  mapLocation.prototype.createFlickerAPIURL = function(location) {
     var base_url = 'https://api.flickr.com/services/rest/?method=flickr.photos.search';
     var api_key = '816dfffa932b12dc03313acf79610d73';
     var query = location.title() + ' ' + location.city + ' ' + location.state;
