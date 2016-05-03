@@ -4,7 +4,10 @@ function init() {
   //
   // Constructor for mapLocation object
   //
-  
+
+  var width = window.innerWidth;
+  var INFOWINDOW_WIDTH = 0.6 * width;
+
   var mapLocation = function(lat, lng, title) {
 
     this.city = 'Gardner';
@@ -20,7 +23,8 @@ function init() {
       animation: google.maps.Animation.DROP
     });
     this.infoWindow = new google.maps.InfoWindow({
-      content: ''
+      content: '',
+      maxWidth: INFOWINDOW_WIDTH
     });
   };
 
@@ -40,7 +44,7 @@ function init() {
       complete: function() {
         var header = '<h2>Wikipedia Entry</h2>';
         var content = '<p>' + self.wikipediaHTML + '</p>';
-        ViewModel.renderContent(header, content);
+        ViewModel.renderContent('wikipedia', header, content);
       }
     });
   };
@@ -75,7 +79,7 @@ function init() {
       },
       complete: function() {
         var header = '<h2>Pictures from Flickr</h2>';
-        ViewModel.renderContent(header, self.flickrHTML);
+        ViewModel.renderContent('flickr', header, self.flickrHTML);
       }
     });
   };
@@ -92,7 +96,10 @@ function init() {
     var html = '';
     data.photos.photo.forEach(function(photo) {
       var img = 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
-      var img_entry = '<img src="' + img + '">';
+      // Styling needs to be set in the html since stylesheets are not parsed when
+      // the infoWindows are created
+      // var img_entry = '<img style="max-width: ' + INFOWINDOW_WIDTH + 'px;" src="' + img + '">';
+      var img_entry = '<img style="max-width: 100%;" src="' + img + '">';
       html += img_entry;
     });
     return html;
@@ -147,10 +154,12 @@ function init() {
     },
 
     // Renders content from 3rd party apis in the infoWindow
-    renderContent: function(header, content) {
+    renderContent: function(div, header, content) {
       var $infoWindow = $('.infoWindow');
-      $infoWindow.append(header);
-      $infoWindow.append(content);
+      $infoWindow.append('<div class="' + div + '"></div>');
+      var $apiDiv = $('.' + div);
+      $apiDiv.append(header);
+      $apiDiv.append(content);
     },
 
     // Compare the value from the input box to the location's title. If the title
@@ -169,6 +178,8 @@ function init() {
 
     toggleInfoWindow: function() {
       if (this.infoWindow.content === '') {
+        // Styling needs to be set in the html since stylesheets are not parsed when
+        // the infoWindows are created
         this.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
         ViewModel.getInfo(this);
       }

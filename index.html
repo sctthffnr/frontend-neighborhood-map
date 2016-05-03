@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width" />
   <title>Document</title>
 
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
@@ -10,7 +11,7 @@
 </head>
 <body>
   <div class="container-fluid fill">
-    <div class="locations col-md-3">
+    <div class="locations col-md-3 col-sm-3">
       <div class="input-group">
         <span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>
         <input data-bind="textInput: filter, event: {input: filterLocations}" type="text"
@@ -21,7 +22,7 @@
               class="list-item"></li>
       </ul>
     </div>
-    <div class="col-md-9" id="map"></div>
+    <div class="col-md-9 col-sm-9" id="map"></div>
   </div>
 </body>
 
