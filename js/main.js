@@ -1,7 +1,10 @@
 function init() {
   "use strict";
 
+  //
   // Constructor for mapLocation object
+  //
+  
   var mapLocation = function(lat, lng, title) {
 
     this.city = 'Gardner';
@@ -95,10 +98,9 @@ function init() {
     return html;
   };
 
-  mapLocation.prototype.getInfo = function() {
-    this.getWikipedia();
-    this.getFlickr();
-  };
+  //
+  // ViewModel Definition
+  //
 
   var ViewModel = {
 
@@ -144,7 +146,7 @@ function init() {
       });
     },
 
-    // Renders content from 3rd part apis in the infoWindow
+    // Renders content from 3rd party apis in the infoWindow
     renderContent: function(header, content) {
       var $infoWindow = $('.infoWindow');
       $infoWindow.append(header);
@@ -168,7 +170,7 @@ function init() {
     toggleInfoWindow: function() {
       if (this.infoWindow.content === '') {
         this.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
-        this.getInfo();
+        ViewModel.getInfo(this);
       }
       if (this.infoWindowOpen) {
         ViewModel.closeInfoWindow(this);
@@ -187,6 +189,12 @@ function init() {
       location.infoWindow.close();
       location.marker.setAnimation(null);
       location.infoWindowOpen = false;
+    },
+
+    // Wrapper function for specific api calls
+    getInfo: function(location) {
+      location.getWikipedia();
+      location.getFlickr();
     }
 
   };
