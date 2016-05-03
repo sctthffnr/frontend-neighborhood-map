@@ -17,7 +17,7 @@
                placeholder="Search" class="form-control" name="" id="">
       </div>
       <ul class="list-unstyled" data-bind="foreach: locations">
-          <li data-bind="text: title, visible: show, click: toggleInfoWindow"
+          <li data-bind="text: title, visible: show, click: $parent.toggleInfoWindow"
               class="list-item"></li>
       </ul>
     </div>

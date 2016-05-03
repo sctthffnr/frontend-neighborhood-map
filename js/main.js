@@ -21,12 +21,10 @@ function init() {
     });
   };
 
-  // Prototype definitions for mapLocation class
-
-  // These functions retrieve, format, and display information from Wikipedia
+  // These functions retrieve data from Wikipedia
   mapLocation.prototype.getWikipedia = function() {
     var self = this;
-    var url = self.createWikipediaAPIURL(self);
+    var url = self.createWikipediaAPIURL();
     $.ajax({
       url: url,
       dataType: 'jsonp',
@@ -37,16 +35,16 @@ function init() {
         self.wikipediaHTML = 'Unable to retrieve information from Wikipedia';
       },
       complete: function() {
-        var header = '<h2>Wikipedia Entry</h2>'
+        var header = '<h2>Wikipedia Entry</h2>';
         var content = '<p>' + self.wikipediaHTML + '</p>';
         ViewModel.renderContent(header, content);
       }
     });
   };
 
-  mapLocation.prototype.createWikipediaAPIURL = function(location) {
+  mapLocation.prototype.createWikipediaAPIURL = function() {
     var wikipedia_query = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=&explaintext=&titles=';
-    var url = wikipedia_query + location.title();
+    var url = wikipedia_query + this.title();
     return url;
   };
 
@@ -59,10 +57,10 @@ function init() {
     return text;
   };
 
-  // These functions retrieve, format, and display information from Flickr
+  // These functions retrieve data from Flickr
   mapLocation.prototype.getFlickr = function() {
     var self = this;
-    var url = self.createFlickerAPIURL(self);
+    var url = self.createFlickerAPIURL();
     $.ajax({
       url: url,
       dataType: 'json',
@@ -79,10 +77,10 @@ function init() {
     });
   };
 
-  mapLocation.prototype.createFlickerAPIURL = function(location) {
+  mapLocation.prototype.createFlickerAPIURL = function() {
     var base_url = 'https://api.flickr.com/services/rest/?method=flickr.photos.search';
     var api_key = '816dfffa932b12dc03313acf79610d73';
-    var query = location.title() + ' ' + location.city + ' ' + location.state;
+    var query = this.title() + ' ' + this.city + ' ' + this.state;
     var url = base_url + '&text=' + query + '&api_key=' + api_key + '&per_page=10&format=json&nojsoncallback=1';
     return url;
   };
@@ -97,34 +95,9 @@ function init() {
     return html;
   };
 
-  // These functions control the display and content of the Google Maps infoWindow
-  mapLocation.prototype.toggleInfoWindow = function() {
-    if (this.infoWindow.content === '') {
-      this.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
-      this.getInfo();
-    }
-    if (this.infoWindowOpen) {
-      this.closeInfoWindow();
-    } else {
-      this.openInfoWindow();
-    }
-  };
-
   mapLocation.prototype.getInfo = function() {
     this.getWikipedia();
     this.getFlickr();
-  };
-
-  mapLocation.prototype.closeInfoWindow = function() {
-    this.infoWindow.close();
-    this.marker.setAnimation(null);
-    this.infoWindowOpen = false;
-  };
-
-  mapLocation.prototype.openInfoWindow = function() {
-    this.infoWindow.open(ViewModel.map, this.marker);
-    this.marker.setAnimation(google.maps.Animation.BOUNCE);
-    this.infoWindowOpen = true;
   };
 
   var ViewModel = {
@@ -152,6 +125,8 @@ function init() {
       });
     },
 
+    // Renders the markers on the map and adds a click handler to the markers
+    // so they will open an infoWindow when clicked.
     renderMarkers: function() {
       ViewModel.locations.forEach(function(location) {
         if (location.show()) {
@@ -159,20 +134,21 @@ function init() {
         } else {
           location.marker.setMap(null);
         }
-        location.marker.addListener('click', location.toggleInfoWindow.bind(location));
+        location.marker.addListener('click', ViewModel.toggleInfoWindow.bind(location));
       });
-    },
-
-    renderContent: function(header, content) {
-      var $infoWindow = $('.infoWindow');
-      $infoWindow.append(header);
-      $infoWindow.append(content);
     },
 
     listClickHandler: function() {
       $('.list-item').click(function() {
         $(this).toggleClass('list-item-active');
       });
+    },
+
+    // Renders content from 3rd part apis in the infoWindow
+    renderContent: function(header, content) {
+      var $infoWindow = $('.infoWindow');
+      $infoWindow.append(header);
+      $infoWindow.append(content);
     },
 
     // Compare the value from the input box to the location's title. If the title
@@ -188,6 +164,31 @@ function init() {
       });
       ViewModel.renderMarkers();
     },
+
+    toggleInfoWindow: function() {
+      if (this.infoWindow.content === '') {
+        this.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
+        this.getInfo();
+      }
+      if (this.infoWindowOpen) {
+        ViewModel.closeInfoWindow(this);
+      } else {
+        ViewModel.openInfoWindow(this);
+      }
+    },
+
+    openInfoWindow: function(location) {
+      location.infoWindow.open(ViewModel.map, location.marker);
+      location.marker.setAnimation(google.maps.Animation.BOUNCE);
+      location.infoWindowOpen = true;
+    },
+
+    closeInfoWindow: function(location) {
+      location.infoWindow.close();
+      location.marker.setAnimation(null);
+      location.infoWindowOpen = false;
+    }
+
   };
 
   ko.applyBindings(ViewModel);
