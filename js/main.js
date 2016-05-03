@@ -37,7 +37,9 @@ function init() {
         self.wikipediaHTML = 'Unable to retrieve information from Wikipedia';
       },
       complete: function() {
-        self.renderWikipedia(self.wikipediaHTML);
+        var header = '<h2>Wikipedia Entry</h2>'
+        var content = '<p>' + self.wikipediaHTML + '</p>';
+        ViewModel.renderContent(header, content);
       }
     });
   };
@@ -57,12 +59,6 @@ function init() {
     return text;
   };
 
-  mapLocation.prototype.renderWikipedia = function(html) {
-    var $infoWindow = $('.infoWindow');
-    $infoWindow.append('<h2>Wikipedia Entry</h2>');
-    $infoWindow.append('<p>' + html + '</p>');
-  };
-
   // These functions retrieve, format, and display information from Flickr
   mapLocation.prototype.getFlickr = function() {
     var self = this;
@@ -77,7 +73,8 @@ function init() {
         self.flickrHTML = 'Unable to retrieve information from Flickr';
       },
       complete: function() {
-        self.renderFlickr(self.flickrHTML);
+        var header = '<h2>Pictures from Flickr</h2>';
+        ViewModel.renderContent(header, self.flickrHTML);
       }
     });
   };
@@ -98,12 +95,6 @@ function init() {
       html += img_entry;
     });
     return html;
-  };
-
-  mapLocation.prototype.renderFlickr = function(html) {
-    var $infoWindow = $('.infoWindow');
-    $infoWindow.append('<h2>Pictures from Flickr</h2>');
-    $infoWindow.append(html);
   };
 
   // These functions control the display and content of the Google Maps infoWindow
@@ -170,6 +161,12 @@ function init() {
         }
         location.marker.addListener('click', location.toggleInfoWindow.bind(location));
       });
+    },
+
+    renderContent: function(header, content) {
+      var $infoWindow = $('.infoWindow');
+      $infoWindow.append(header);
+      $infoWindow.append(content);
     },
 
     listClickHandler: function() {
