@@ -22,6 +22,8 @@ function init() {
   };
 
   // Prototype definitions for mapLocation class
+
+  // These functions retrieve, format, and display information from Wikipedia
   mapLocation.prototype.getWikipedia = function() {
     var self = this;
     var url = self.createWikipediaAPIURL(self);
@@ -29,7 +31,13 @@ function init() {
       url: url,
       dataType: 'jsonp',
       success: function(data) {
-        self.wikipediaCallback(data);
+        self.wikipediaHTML = self.wikipediaSuccess(data);
+      },
+      error: function() {
+        self.wikipediaHTML = 'Unable to retrieve information from Wikipedia';
+      },
+      complete: function() {
+        self.renderWikipedia(self.wikipediaHTML);
       }
     });
   };
@@ -40,23 +48,22 @@ function init() {
     return url;
   };
 
-  mapLocation.prototype.wikipediaCallback = function(data) {
+  mapLocation.prototype.wikipediaSuccess = function(data) {
     var id = data.query.pages;
     var text = id[Object.keys(id)[0]].extract;
     if (!text) {
       text = 'No Wikipedia entry for ' + this.title();
     }
-    this.formatWikipedia(text);
+    return text;
   };
 
-  mapLocation.prototype.formatWikipedia = function(text) {
+  mapLocation.prototype.renderWikipedia = function(html) {
     var $infoWindow = $('.infoWindow');
-    var header = '<h2>Wikipedia Entry</h2>';
-    text = '<p>' + text + '</p>';
-    var html = header + text;
-    $infoWindow.append(html);
+    $infoWindow.append('<h2>Wikipedia Entry</h2>');
+    $infoWindow.append('<p>' + html + '</p>');
   };
 
+  // These functions retrieve, format, and display information from Flickr
   mapLocation.prototype.getFlickr = function() {
     var self = this;
     var url = self.createFlickerAPIURL(self);
@@ -64,7 +71,13 @@ function init() {
       url: url,
       dataType: 'json',
       success: function(data) {
-        self.flickrCallback(data);
+        self.flickrHTML = self.flickrSuccess(data);
+      },
+      error: function() {
+        self.flickrHTML = 'Unable to retrieve information from Flickr';
+      },
+      complete: function() {
+        self.renderFlickr(self.flickrHTML);
       }
     });
   };
@@ -77,17 +90,23 @@ function init() {
     return url;
   };
 
-  mapLocation.prototype.flickrCallback = function(data) {
-    var $infoWindow = $('.infoWindow');
-    var self = this;
-    $infoWindow.append('<h2>Pictures from Flickr</h2>');
+  mapLocation.prototype.flickrSuccess = function(data) {
+    var html = '';
     data.photos.photo.forEach(function(photo) {
       var img = 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
-      var html = '<img src="' + img + '">';
-      $infoWindow.append(html);
+      var img_entry = '<img src="' + img + '">';
+      html += img_entry;
     });
+    return html;
   };
 
+  mapLocation.prototype.renderFlickr = function(html) {
+    var $infoWindow = $('.infoWindow');
+    $infoWindow.append('<h2>Pictures from Flickr</h2>');
+    $infoWindow.append(html);
+  };
+
+  // These functions control the display and content of the Google Maps infoWindow
   mapLocation.prototype.toggleInfoWindow = function() {
     if (this.infoWindow.content === '') {
       this.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
