@@ -4,7 +4,7 @@ function init() {
   //
   // Constructor for mapLocation object
   //
-  
+
   var mapLocation = function(lat, lng, title) {
 
     this.city = 'Gardner';
