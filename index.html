@@ -18,8 +18,8 @@
                placeholder="Search" class="form-control" name="" id="">
       </div>
       <ul class="list-unstyled" data-bind="foreach: locations">
-          <li data-bind="text: title, visible: show, click: $parent.toggleInfoWindow"
-              class="list-item"></li>
+          <li data-bind="text: title, visible: show, click: $parent.toggleInfoWindow,
+              css: {'list-item-active': infoWindowActive}" class="list-item"></li>
       </ul>
     </div>
     <div class="col-md-9 col-sm-9" id="map"></div>

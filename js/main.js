@@ -15,7 +15,7 @@ function init() {
     this.longitude = lng;
     this.title = ko.observable(title);
     this.show = ko.observable(true);
-    this.infoWindowOpen = false;
+    this.infoWindowActive = ko.observable(false);
     this.marker = new google.maps.Marker({
       position: {lat: this.latitude, lng: this.longitude},
       title: this.title(),
@@ -114,19 +114,23 @@ function init() {
       new mapLocation(42.580153, -71.971216, 'Dunn State Park')
     ],
 
+    // All map locations share the same info window.
     infoWindow: new google.maps.InfoWindow({
       content: '',
       maxWidth: INFOWINDOW_WIDTH
     }),
 
-    infoWindowOpen: false,
+    // This keeps track of the prevously selected map location so that we can
+    // stop animations for the location object's marker and toggle styling for
+    // the list class
+    currentLocation: null,
 
+    // This holds the current value in the search filter
     filter: ko.observable(''),
 
     initMap: function() {
       ViewModel.renderMap();
       ViewModel.renderMarkers();
-      ViewModel.listClickHandler();
     },
 
     renderMap: function() {
@@ -149,12 +153,6 @@ function init() {
       });
     },
 
-    listClickHandler: function() {
-      $('.list-item').click(function() {
-        $(this).toggleClass('list-item-active');
-      });
-    },
-
     // Renders content from 3rd party apis in the infoWindow
     renderContent: function(div, header, content) {
       var $infoWindow = $('.infoWindow');
@@ -164,7 +162,7 @@ function init() {
       $apiDiv.append(content);
     },
 
-    // Compare the value from the input box to the location's title. If the title
+    // Compares the value from the input box to the location's title. If the title
     // does not match any part of the input, don't show it on the map.
     filterLocations: function() {
       var input = new RegExp(ViewModel.filter(), 'i');
@@ -178,38 +176,49 @@ function init() {
       ViewModel.renderMarkers();
     },
 
+    // This function toggles the Google Maps info window. It handles the following
+    // three scenarios:
+    // 1. No location has ever been clicked.
+    // 2. The location for the current info window has been clicked again, closing
+    //    the info window and deselecting the location.
+    // 3. A new location is clicked, deselecting any prevous items and opening an
+    //   info window for the new item.
     toggleInfoWindow: function() {
-      if (ViewModel.infoWindowOpen) {
+      if (ViewModel.currentLocation === null) {
+        ViewModel.currentLocation = this
+        ViewModel.setupInfoWindow(this);
+      } else if (ViewModel.currentLocation === this && this.infoWindowActive()) {
         ViewModel.closeInfoWindow(this);
       } else {
-        // Styling needs to be set in the html since stylesheets are not parsed when
-        // the infoWindows are created
-        ViewModel.removeActiveLinks();
-        ViewModel.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
-        ViewModel.getInfo(this);
-        ViewModel.openInfoWindow(this);
+        ViewModel.currentLocation.infoWindowActive(false);
+        ViewModel.currentLocation.marker.setAnimation(null);
+        ViewModel.currentLocation = this
+        ViewModel.setupInfoWindow(this);
       }
     },
 
+    setupInfoWindow: function(location) {
+      ViewModel.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
+      ViewModel.getInfo(location);
+      ViewModel.openInfoWindow(location);
+    },
+
     openInfoWindow: function(location) {
+      location.infoWindowActive(true);
       ViewModel.infoWindow.open(ViewModel.map, location.marker);
       location.marker.setAnimation(google.maps.Animation.BOUNCE);
-      ViewModel.infoWindowOpen = true;
+      // This makes sure that the list highlighting goes away and the
+      // animation stops when the info window itself is closed
       ViewModel.infoWindow.addListener('closeclick', function () {
+        location.infoWindowActive(false);
         ViewModel.closeInfoWindow(location);
-        ViewModel.removeActiveLinks();
       });
     },
 
-    removeActiveLinks: function() {
-      var $activeLink = $('.list-item-active');
-      $activeLink.removeClass('list-item-active');
-    },
-
     closeInfoWindow: function(location) {
+      location.infoWindowActive(false);
       ViewModel.infoWindow.close();
       location.marker.setAnimation(null);
-      ViewModel.infoWindowOpen = false;
       ViewModel.infoWindow.setContent('');
     },
 
