@@ -30,3 +30,19 @@ html, body {
 .list-item-active {
   background-color: white;
 }
+
+@media only screen and (max-width: 480px) {
+  .locations {
+    height: 50%;
+  }
+
+  #map {
+    height: 50%;
+  }
+}
+
+/*@media only screen and (max-width: 480px) {
+  html, body {
+    height: 50%;
+  }
+}*/

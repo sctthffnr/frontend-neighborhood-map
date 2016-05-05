@@ -4,6 +4,8 @@ function init() {
   //
   // Constructor for mapLocation object
   //
+  var width = window.innerWidth;
+  var INFOWINDOW_WIDTH = 0.6 * width;
 
   var mapLocation = function(lat, lng, title) {
 
@@ -18,9 +20,6 @@ function init() {
       position: {lat: this.latitude, lng: this.longitude},
       title: this.title(),
       animation: google.maps.Animation.DROP
-    });
-    this.infoWindow = new google.maps.InfoWindow({
-      content: ''
     });
   };
 
@@ -40,7 +39,7 @@ function init() {
       complete: function() {
         var header = '<h2>Wikipedia Entry</h2>';
         var content = '<p>' + self.wikipediaHTML + '</p>';
-        ViewModel.renderContent(header, content);
+        ViewModel.renderContent('wikipedia', header, content);
       }
     });
   };
@@ -75,7 +74,7 @@ function init() {
       },
       complete: function() {
         var header = '<h2>Pictures from Flickr</h2>';
-        ViewModel.renderContent(header, self.flickrHTML);
+        ViewModel.renderContent('flickr', header, self.flickrHTML);
       }
     });
   };
@@ -92,7 +91,10 @@ function init() {
     var html = '';
     data.photos.photo.forEach(function(photo) {
       var img = 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
-      var img_entry = '<img src="' + img + '">';
+      // Styling needs to be set in the html since stylesheets are not parsed when
+      // the infoWindows are created
+      // var img_entry = '<img style="max-width: ' + INFOWINDOW_WIDTH + 'px;" src="' + img + '">';
+      var img_entry = '<img style="max-width: 100%;" src="' + img + '">';
       html += img_entry;
     });
     return html;
@@ -111,6 +113,13 @@ function init() {
       new mapLocation(42.593884, -71.985331, 'Mount Wachusett Community College'),
       new mapLocation(42.580153, -71.971216, 'Dunn State Park')
     ],
+
+    infoWindow: new google.maps.InfoWindow({
+      content: '',
+      maxWidth: INFOWINDOW_WIDTH
+    }),
+
+    infoWindowOpen: false,
 
     filter: ko.observable(''),
 
@@ -147,10 +156,12 @@ function init() {
     },
 
     // Renders content from 3rd party apis in the infoWindow
-    renderContent: function(header, content) {
+    renderContent: function(div, header, content) {
       var $infoWindow = $('.infoWindow');
-      $infoWindow.append(header);
-      $infoWindow.append(content);
+      $infoWindow.append('<div class="' + div + '"></div>');
+      var $apiDiv = $('.' + div);
+      $apiDiv.append(header);
+      $apiDiv.append(content);
     },
 
     // Compare the value from the input box to the location's title. If the title
@@ -168,27 +179,38 @@ function init() {
     },
 
     toggleInfoWindow: function() {
-      if (this.infoWindow.content === '') {
-        this.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
-        ViewModel.getInfo(this);
-      }
-      if (this.infoWindowOpen) {
+      if (ViewModel.infoWindowOpen) {
         ViewModel.closeInfoWindow(this);
       } else {
+        // Styling needs to be set in the html since stylesheets are not parsed when
+        // the infoWindows are created
+        ViewModel.removeActiveLinks();
+        ViewModel.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
+        ViewModel.getInfo(this);
         ViewModel.openInfoWindow(this);
       }
     },
 
     openInfoWindow: function(location) {
-      location.infoWindow.open(ViewModel.map, location.marker);
+      ViewModel.infoWindow.open(ViewModel.map, location.marker);
       location.marker.setAnimation(google.maps.Animation.BOUNCE);
-      location.infoWindowOpen = true;
+      ViewModel.infoWindowOpen = true;
+      ViewModel.infoWindow.addListener('closeclick', function () {
+        ViewModel.closeInfoWindow(location);
+        ViewModel.removeActiveLinks();
+      });
+    },
+
+    removeActiveLinks: function() {
+      var $activeLink = $('.list-item-active');
+      $activeLink.removeClass('list-item-active');
     },
 
     closeInfoWindow: function(location) {
-      location.infoWindow.close();
+      ViewModel.infoWindow.close();
       location.marker.setAnimation(null);
-      location.infoWindowOpen = false;
+      ViewModel.infoWindowOpen = false;
+      ViewModel.infoWindow.setContent('');
     },
 
     // Wrapper function for specific api calls
