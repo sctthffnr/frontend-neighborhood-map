@@ -22,10 +22,6 @@ function init() {
       title: this.title(),
       animation: google.maps.Animation.DROP
     });
-    this.infoWindow = new google.maps.InfoWindow({
-      content: '',
-      maxWidth: INFOWINDOW_WIDTH
-    });
   };
 
   // These functions retrieve data from Wikipedia
@@ -119,6 +115,13 @@ function init() {
       new mapLocation(42.580153, -71.971216, 'Dunn State Park')
     ],
 
+    infoWindow: new google.maps.InfoWindow({
+      content: '',
+      maxWidth: INFOWINDOW_WIDTH
+    }),
+
+    infoWindowOpen: false,
+
     filter: ko.observable(''),
 
     initMap: function() {
@@ -177,29 +180,38 @@ function init() {
     },
 
     toggleInfoWindow: function() {
-      if (this.infoWindow.content === '') {
-        // Styling needs to be set in the html since stylesheets are not parsed when
-        // the infoWindows are created
-        this.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
-        ViewModel.getInfo(this);
-      }
-      if (this.infoWindowOpen) {
+      if (ViewModel.infoWindowOpen) {
         ViewModel.closeInfoWindow(this);
       } else {
+        // Styling needs to be set in the html since stylesheets are not parsed when
+        // the infoWindows are created
+        ViewModel.removeActiveLinks();
+        ViewModel.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
+        ViewModel.getInfo(this);
         ViewModel.openInfoWindow(this);
       }
     },
 
     openInfoWindow: function(location) {
-      location.infoWindow.open(ViewModel.map, location.marker);
+      ViewModel.infoWindow.open(ViewModel.map, location.marker);
       location.marker.setAnimation(google.maps.Animation.BOUNCE);
-      location.infoWindowOpen = true;
+      ViewModel.infoWindowOpen = true;
+      ViewModel.infoWindow.addListener('closeclick', function () {
+        ViewModel.closeInfoWindow(location);
+        ViewModel.removeActiveLinks();
+      });
+    },
+
+    removeActiveLinks: function() {
+      var $activeLink = $('.list-item-active');
+      $activeLink.removeClass('list-item-active');
     },
 
     closeInfoWindow: function(location) {
-      location.infoWindow.close();
+      ViewModel.infoWindow.close();
       location.marker.setAnimation(null);
-      location.infoWindowOpen = false;
+      ViewModel.infoWindowOpen = false;
+      ViewModel.infoWindow.setContent('');
     },
 
     // Wrapper function for specific api calls
