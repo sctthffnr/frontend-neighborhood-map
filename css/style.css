@@ -2,7 +2,8 @@
   height: 100%;
 }
 
-html, body {
+html,
+body {
   height: 100%
 }
 
@@ -36,7 +37,7 @@ html, body {
     height: 50%;
   }
 
-  #map {
+.google-map {
     height: 50%;
   }
 }
