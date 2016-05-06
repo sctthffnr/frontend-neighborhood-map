@@ -17,7 +17,7 @@
         <input data-bind="textInput: filter, event: {input: filterLocations}" type="text"
                placeholder="Search" class="form-control">
       </div>
-      <ul class="list-unstyled" data-bind="foreach: locations">
+      <ul class="list-unstyled" data-bind="foreach: Model">
           <li data-bind="text: title, visible: show, click: $parent.toggleInfoWindow,
               css: {'list-item-active': infoWindowActive}" class="list-item"></li>
       </ul>

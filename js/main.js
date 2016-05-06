@@ -1,6 +1,8 @@
 // The Google Map
 var map;
 
+// This will be populated when the Google maps library is available
+var Model;
 //
 // Constructor for mapLocation object
 //
@@ -26,12 +28,10 @@ var MapLocation = function(lat, lng, title) {
 // ViewModel Definition
 //
 
-function ViewModel(locations) {
+function ViewModel() {
   "use strict";
 
   var self = this;
-
-  self.locations = locations;
 
   // All map locations share the same info window.
   self.infoWindow = new google.maps.InfoWindow({
@@ -49,7 +49,7 @@ function ViewModel(locations) {
 
   // Renders the markers on the map
   self.renderMarkers = function() {
-    self.locations.forEach(function(location) {
+    Model.forEach(function(location) {
       if (location.show()) {
         location.marker.setMap(map);
       } else {
@@ -61,7 +61,7 @@ function ViewModel(locations) {
   // Adds a click handler to each marker to match the behavior for when a list
   // item gets clicked.
   self.setMarkerClickHandler = function() {
-    self.locations.forEach(function(location) {
+    Model.forEach(function(location) {
       location.marker.addListener('click', self.toggleInfoWindow.bind(location));
     });
   };
@@ -79,7 +79,7 @@ function ViewModel(locations) {
   // does not match any part of the input, don't show it on the map or in the list
   self.filterLocations = function() {
     var input = new RegExp(self.filter(), 'i');
-    locations.forEach(function(location) {
+    Model.forEach(function(location) {
       if (location.title.match(input)) {
         location.show(true);
       } else {
@@ -239,7 +239,7 @@ function googleSuccess() {
   });
 
   // Our fabulous locations
-  var Model = [
+  Model = [
     new MapLocation(42.5750, -71.9826, 'The Big Chair'),
     new MapLocation(42.5740603, -71.9958973, 'City Hall'),
     new MapLocation(42.5741523, -71.9944446, 'Blue Moon Diner'),
@@ -247,7 +247,7 @@ function googleSuccess() {
     new MapLocation(42.580153, -71.971216, 'Dunn State Park')
   ];
 
-  var vm = new ViewModel(Model);
+  var vm = new ViewModel();
   ko.applyBindings(vm);
   vm.renderMarkers();
   vm.setMarkerClickHandler();
