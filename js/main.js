@@ -138,7 +138,7 @@ function ViewModel() {
     if (self.currentLocation === null) {
       self.currentLocation = this;
       setupInfoWindow(this);
-    } else if (self.currentLocation === self && this.infoWindowActive()) {
+    } else if (self.currentLocation === this && this.infoWindowActive()) {
       closeInfoWindow(this);
     } else {
       self.currentLocation.infoWindowActive(false);
