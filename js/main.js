@@ -59,7 +59,7 @@ function init() {
 
     renderMap: function() {
       ViewModel.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 13,
+        zoom: 12,
         center: {lat: 42.5751, lng: -71.9981}
       });
     },
@@ -120,7 +120,7 @@ function init() {
         location.marker.setAnimation(google.maps.Animation.BOUNCE);
         ViewModel.infoWindow.addListener('closeclick', function () {
           location.infoWindowActive(false);
-          ViewModel.closeInfoWindow(location);
+          closeInfoWindow(location);
         });
       }
 
