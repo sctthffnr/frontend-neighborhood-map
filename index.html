@@ -15,7 +15,7 @@
       <div class="input-group">
         <span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>
         <input data-bind="textInput: filter, event: {input: filterLocations}" type="text"
-               placeholder="Search" class="form-control" name="" id="">
+               placeholder="Search" class="form-control">
       </div>
       <ul class="list-unstyled" data-bind="foreach: locations">
           <li data-bind="text: title, visible: show, click: $parent.toggleInfoWindow,
@@ -24,7 +24,6 @@
     </div>
     <div class="col-md-9 col-sm-9" id="map"></div>
   </div>
-</body>
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt5RmJ9IlKMC8MRLr9SqiHobtG2DTMoOQ&callback=init"
     async defer></script>
@@ -32,5 +31,5 @@
   <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
 
-
+</body>
 </html>
