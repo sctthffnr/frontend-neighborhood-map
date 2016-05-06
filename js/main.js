@@ -33,6 +33,14 @@ function ViewModel() {
 
   var self = this;
 
+  self.wikipediaContent = ko.observable('');
+  self.flickrContent = ko.observable('');
+
+  self.content = ko.computed(function() {
+    return '<div class="infoWindow" style="height: 250px;">' +
+            self.wikipediaContent() + self.flickrContent() + '</div>';
+  });
+
   // All map locations share the same info window.
   self.infoWindow = new google.maps.InfoWindow({
     content: '',
@@ -67,12 +75,7 @@ function ViewModel() {
   };
 
   // Renders content from 3rd party apis in the infoWindow
-  self.renderContent = function(div, header, content) {
-    var $infoWindow = $('.infoWindow');
-    $infoWindow.append('<div class="' + div + '"></div>');
-    var $apiDiv = $('.' + div);
-    $apiDiv.append(header);
-    $apiDiv.append(content);
+  self.renderContent = function() {
   };
 
   // Compares the value from the input box to the location's title. If the title
@@ -95,7 +98,7 @@ function ViewModel() {
     // Attach a div to the info window so we can control where to put
     // the content later.
     function setupInfoWindow(location) {
-      self.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
+      // self.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
       getInfo(location);
       openInfoWindow(location);
     }
@@ -181,8 +184,8 @@ function ViewModel() {
       },
       complete: function() {
         var header = '<h2>Wikipedia Entry</h2>';
-        var content = '<p>' + wikipediaHTML + '</p>';
-        self.renderContent('wikipedia', header, content);
+        self.wikipediaContent(header + '<p>' + wikipediaHTML + '</p>');
+        self.infoWindow.setContent(self.content());
       }
     });
   };
@@ -224,7 +227,8 @@ function ViewModel() {
       },
       complete: function() {
         var header = '<h2>Pictures from Flickr</h2>';
-        self.renderContent('flickr', header, flickrHTML);
+        self.flickrContent(header + flickrHTML);
+        self.infoWindow.setContent(self.content());
       }
     });
   };
