@@ -28,7 +28,7 @@ var MapLocation = function(lat, lng, title) {
 // ViewModel Definition
 //
 
-function ViewModel() {
+var ViewModel = function() {
   "use strict";
 
   var self = this;
@@ -240,7 +240,7 @@ function ViewModel() {
       }
     });
   };
-}
+};
 
 function googleSuccess() {
   "use strict";
