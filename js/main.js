@@ -136,14 +136,14 @@ function ViewModel(locations) {
     // 3. A new location is clicked, deselecting any prevous items and opening an
     //   info window for the new item.
     if (self.currentLocation === null) {
-      self.currentLocation = self;
+      self.currentLocation = this;
       setupInfoWindow(this);
     } else if (self.currentLocation === self && this.infoWindowActive()) {
       closeInfoWindow(this);
     } else {
-      this.infoWindowActive(false);
-      this.marker.setAnimation(null);
-      self.currentLocation = self;
+      self.currentLocation.infoWindowActive(false);
+      self.currentLocation.marker.setAnimation(null);
+      self.currentLocation = this;
       setupInfoWindow(this);
     }
   };
