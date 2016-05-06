@@ -245,4 +245,9 @@ function init() {
 
   ko.applyBindings(ViewModel);
   ViewModel.initMap();
+
+}
+
+function googleError() {
+  alert('Unable to load Google Map. Please try again later.');
 }
