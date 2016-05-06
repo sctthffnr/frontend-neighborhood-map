@@ -202,13 +202,17 @@ function ViewModel() {
 
     function flickrSuccess(data) {
       var html = '';
-      data.photos.photo.forEach(function(photo) {
-        var img = 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
-        // Styling needs to be set in the html since stylesheets are not parsed when
-        // the infoWindows are created
-        var img_entry = '<img style="max-width: 100%;" src="' + img + '">';
-        html += img_entry;
-      });
+      if (!data) {
+        html = 'No Flickr photos for ' + location.title;
+      } else {
+        data.photos.photo.forEach(function(photo) {
+          var img = 'https://farm' + photo.farm + '.staticflickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
+          // Styling needs to be set in the html since stylesheets are not parsed when
+          // the infoWindows are created
+          var img_entry = '<img style="max-width: 100%;" src="' + img + '">';
+          html += img_entry;
+        });
+      }
       return html;
     }
 
