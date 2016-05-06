@@ -33,6 +33,7 @@ function ViewModel() {
 
   var self = this;
 
+  // These observables display content for the 3rd part APIs
   self.wikipediaContent = ko.observable('');
   self.flickrContent = ko.observable('');
 
@@ -74,10 +75,6 @@ function ViewModel() {
     });
   };
 
-  // Renders content from 3rd party apis in the infoWindow
-  self.renderContent = function() {
-  };
-
   // Compares the value from the input box to the location's title. If the title
   // does not match any part of the input, don't show it on the map or in the list
   self.filterLocations = function() {
@@ -95,10 +92,7 @@ function ViewModel() {
   // This function toggles the Google Maps info window's visibility
   self.toggleInfoWindow = function() {
 
-    // Attach a div to the info window so we can control where to put
-    // the content later.
     function setupInfoWindow(location) {
-      // self.infoWindow.setContent('<div class="infoWindow" style="height: 250px;"></div>');
       getInfo(location);
       openInfoWindow(location);
     }
@@ -173,11 +167,16 @@ function ViewModel() {
       return text;
     }
 
+    // Set up a timeout check for this api
+    var timeout = setTimeout(function() {
+                alert('ERROR: Failed to load data for Wikipedia');
+              }, 3000);
     $.ajax({
       url: url,
       dataType: 'jsonp',
       success: function(data) {
         wikipediaHTML = wikipediaSuccess(data);
+        clearTimeout(timeout);
       },
       error: function() {
         wikipediaHTML = 'Unable to retrieve information from Wikipedia';
@@ -216,11 +215,16 @@ function ViewModel() {
     var flickrHTML;
     var url = createFlickerAPIURL();
 
+    // Timeout check for this api
+    var timeout = setTimeout(function() {
+                  alert('ERROR: Failed to load data for Flickr');
+                }, 3000);
     $.ajax({
       url: url,
       dataType: 'json',
       success: function(data) {
         flickrHTML = flickrSuccess(data);
+        clearTimeout(timeout);
       },
       error: function() {
         flickrHTML = 'Unable to retrieve information from Flickr';
